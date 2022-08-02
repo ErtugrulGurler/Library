@@ -24,8 +24,7 @@ public class KitapApplication {
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-
-	//hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
+	
 	@Bean
 	CommandLineRunner run(UserService userService) {
 		return args -> {
