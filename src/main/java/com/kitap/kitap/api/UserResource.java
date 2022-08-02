@@ -11,7 +11,6 @@ import com.kitap.kitap.domain.Role;
 import com.kitap.kitap.domain.Token;
 import com.kitap.kitap.domain.User;
 import com.kitap.kitap.service.UserService;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
