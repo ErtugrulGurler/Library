@@ -4,24 +4,21 @@ import com.book.book.Repo.RoleRepo;
 import com.book.book.Repo.UserRepo;
 import com.book.book.domain.Role;
 import com.book.book.domain.User;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
-    private RoleRepo roleRepo;
-    private UserRepo userRepo;
-    @Autowired
-    public RoleServiceImpl(RoleRepo roleRepo, UserRepo userRepo) {
-        this.roleRepo = roleRepo;
-        this.userRepo = userRepo;
-    }
+    private final RoleRepo roleRepo;
+    private final UserRepo userRepo;
 
     @Override
     public List<Role> getAllRoles() {
@@ -30,7 +27,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public String deleteRole(Long id) {
         if (!roleRepo.existsById(id)){throw new RuntimeException("Role with "+id+" already does not exist" );}
-        String deletedRole = roleRepo.getById(id).getName().toString();
+        String deletedRole = roleRepo.getById(id).getName();
         roleRepo.deleteById(id);
         return "Role " + deletedRole + " is deleted";
     }
@@ -62,6 +59,10 @@ public class RoleServiceImpl implements RoleService {
         log.info("Deleting role {} from user {}", roleRepo.findByName(roleName), username);
         User user = userRepo.findByUsername(username);
         Role role = roleRepo.findByName(roleName);
+        String superRole = "SUPER_ADMIN";
+        if (Objects.equals(roleName, superRole)){
+            throw new RuntimeException("SUPER_ADMINs can not be unauthenticated ");
+        }
         boolean ex = user.getRoles().contains(role);
         if (!ex){throw new RuntimeException("User " + user.getName()+" has not this role");}
         else user.getRoles().remove(role);

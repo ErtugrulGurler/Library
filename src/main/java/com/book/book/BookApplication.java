@@ -11,10 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-/**
- * TODO: Users can get books and add their books in to their lists;
- * Arnold should not be able to change his role ? ;
- */
+
+  //TODO: Users can get books and add their books in to their lists BUY? MONEY? ONLY LOGGED IN USERS CAN BUY THEIR BOOKS;
 @SpringBootApplication
 public class BookApplication {
 

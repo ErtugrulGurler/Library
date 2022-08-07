@@ -3,20 +3,17 @@ package com.book.book.service;
 
 import com.book.book.Repo.BookRepository;
 import com.book.book.domain.Book;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
 
-    @Autowired
-    public BookServiceImpl(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
-    }
     @Override
     public List<Book> getBook() {
         if (bookRepository.findAll().isEmpty()){throw new RuntimeException("There is no book to show. ");}

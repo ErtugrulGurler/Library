@@ -2,6 +2,7 @@ package com.book.book.api;
 
 import com.book.book.domain.User;
 import com.book.book.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,15 +10,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.*;
 
-
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/user")
 public class UserResource {
     private final UserService userService;
-    @Autowired
-    public UserResource(UserService userService) {
-        this.userService = userService;
-    }
 
     @GetMapping("/all")
     public ResponseEntity<List<User>>getUsers() {
