@@ -1,6 +1,9 @@
-package com.kitap.kitap;
+package com.kitap.kitap.domain;
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
+//TODO : Users can get books , same books can be exists, same books can be taken
 @Entity
 @Table
 public class Kitap {
@@ -18,6 +21,9 @@ public class Kitap {
     private String adı;
     private String yazarı;
     private Integer sayfa_sayısı;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
     public Kitap(Long id, String adı, String yazarı, Integer sayfa_sayısı) {
         this.id = id;

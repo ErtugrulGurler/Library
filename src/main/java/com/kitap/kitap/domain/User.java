@@ -1,15 +1,10 @@
 package com.kitap.kitap.domain;
 
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-
-import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.*;
 
 @Entity @Data @NoArgsConstructor
@@ -21,9 +16,16 @@ public class User {
     private String username;
     private String password;
     private String email;
-    @ManyToMany(fetch = EAGER)
-    private List<Role> roles = new ArrayList<>();
     private boolean enabled=false;
+    @ManyToMany
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "users_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private List<Role> roles = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<Kitap> kitaplar = new ArrayList<>();
 
     public User(Long id, String name, String username, String password, String email, boolean enabled) {
         this.id = id;
@@ -39,8 +41,5 @@ public class User {
         this.username = username;
         this.password = password;
         this.email = email;
-    }
-    public void enable(){
-        this.enabled=true;
     }
 }

@@ -28,23 +28,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
     }
-
+//TODO:"/SUPER_ADMIN/".hasAUTHORITY(SUPER_ADMIN)
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
-        customAuthenticationFilter.setFilterProcessesUrl("/api/login");
+        customAuthenticationFilter.setFilterProcessesUrl("/login");
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
-        http.authorizeRequests().antMatchers("/api/signup/**","/api/confirm/**").permitAll();
-        http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**").permitAll();
-        http.authorizeRequests().antMatchers(GET,"/api/kitap/**", "/api/user/**").permitAll();
-        http.authorizeRequests().antMatchers(POST, "/api/user/save").hasAnyAuthority("ADMIN","SUPER_ADMIN");
-        http.authorizeRequests().antMatchers(POST, "/api/role/save").hasAnyAuthority("ADMIN","SUPER_ADMIN");
-        http.authorizeRequests().antMatchers(POST, "/api/kitap").hasAnyAuthority("SUPER_ADMIN");
-        http.authorizeRequests().antMatchers(DELETE, "/api/kitap/**").hasAnyAuthority("SUPER_ADMIN");
-        http.authorizeRequests().antMatchers(PUT, "/api/kitap").hasAnyAuthority("SUPER_ADMIN");
-        http.authorizeRequests().antMatchers(POST, "/api/role/addtouser").hasAnyAuthority("SUPER_ADMIN");
-        http.authorizeRequests().antMatchers(POST, "/api/enable_disable").hasAnyAuthority("SUPER_ADMIN");
+        http.authorizeRequests().antMatchers("/signup/**","/confirm/**").permitAll();
+        http.authorizeRequests().antMatchers("/login/**", "/token/refresh/**").permitAll();
+        http.authorizeRequests().antMatchers(GET,"/kitap/**", "/user/**").permitAll();
+        http.authorizeRequests().antMatchers(POST, "/user/save").hasAnyAuthority("ADMIN","SUPER_ADMIN");
+        http.authorizeRequests().antMatchers(POST, "/role/save").hasAnyAuthority("ADMIN","SUPER_ADMIN");
+        http.authorizeRequests().antMatchers(POST, "/kitap").hasAnyAuthority("SUPER_ADMIN");
+        http.authorizeRequests().antMatchers(DELETE, "/kitap/**").hasAnyAuthority("SUPER_ADMIN");
+        http.authorizeRequests().antMatchers(PUT, "/kitap").hasAnyAuthority("SUPER_ADMIN");
+        http.authorizeRequests().antMatchers(POST, "/role/addtouser").hasAnyAuthority("SUPER_ADMIN");
+        http.authorizeRequests().antMatchers(POST, "/enable_disable").hasAnyAuthority("SUPER_ADMIN");
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(userRepo), UsernamePasswordAuthenticationFilter.class);
