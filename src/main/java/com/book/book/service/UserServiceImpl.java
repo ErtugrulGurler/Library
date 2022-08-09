@@ -62,7 +62,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public List<User> getUsers() {
-        if (userRepo.findAll().isEmpty()){throw new RuntimeException("There is no user to show. ");}
+        if (userRepo.findAll().isEmpty()){
+            throw new RuntimeException("There is no user to show. ");}
         log.info("Fetching all users");
         return userRepo.findAll();
     }

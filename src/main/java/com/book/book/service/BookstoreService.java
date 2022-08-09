@@ -4,5 +4,6 @@ import com.book.book.domain.User;
 
 public interface BookstoreService {
 
-    User buyBook(String bookId, String userId);
+    User buyBook(Long bookID, Long userID);
+    //User refundBook(String bookname,String username);
 }
