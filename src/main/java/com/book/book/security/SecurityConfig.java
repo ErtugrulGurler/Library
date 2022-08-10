@@ -33,14 +33,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         customAuthenticationFilter.setFilterProcessesUrl("/login");
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
-        http.authorizeRequests().antMatchers(GET,"/confirm/**","/login/**", "/token/refresh/**").permitAll();
-        http.authorizeRequests().antMatchers(POST,"/user/signup/**").permitAll();
-        http.authorizeRequests().antMatchers(GET,"/book/**", "/user/**", "/role/**").permitAll();
+        http.authorizeRequests().antMatchers(GET,"/confirm/**","/login/**", "/token/refresh/**","/user/signup/**","/user/confirm/**").permitAll();
+        http.authorizeRequests().antMatchers(GET,"/book/**", "/user/**","/role/**","/bookstore/**").hasAnyAuthority("USER","ADMIN","SUPER_ADMIN");
         http.authorizeRequests().antMatchers(POST, "/user/save").hasAnyAuthority("ADMIN","SUPER_ADMIN");
         http.authorizeRequests().antMatchers(POST, "/role/save").hasAnyAuthority("ADMIN","SUPER_ADMIN");
         http.authorizeRequests().antMatchers(POST, "/book").hasAnyAuthority("SUPER_ADMIN");
         http.authorizeRequests().antMatchers(DELETE, "/book/**").hasAnyAuthority("SUPER_ADMIN");
-        http.authorizeRequests().antMatchers(PUT, "/book").hasAnyAuthority("SUPER_ADMIN");
+        http.authorizeRequests().antMatchers(PUT, "/book/**").hasAnyAuthority("SUPER_ADMIN");
         http.authorizeRequests().antMatchers(POST, "/role/addtouser").hasAnyAuthority("SUPER_ADMIN");
         http.authorizeRequests().antMatchers(POST, "/enable_disable").hasAnyAuthority("SUPER_ADMIN");
         http.authorizeRequests().anyRequest().authenticated();

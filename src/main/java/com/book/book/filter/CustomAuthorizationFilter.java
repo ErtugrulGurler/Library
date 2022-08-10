@@ -12,17 +12,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
+import java.util.*;
 import static java.util.Arrays.stream;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -36,7 +31,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if(request.getServletPath().equals("/login") || request.getServletPath().equals("/token/refresh")) {
+        if(request.getServletPath().equals("/login") || request.getServletPath().equals("/token/refresh")){
             filterChain.doFilter(request, response);
         } else {
             String authorizationHeader = request.getHeader(AUTHORIZATION);
@@ -48,7 +43,10 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     DecodedJWT decodedJWT = verifier.verify(token);
                     String username = decodedJWT.getSubject();
                     Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                    if (userRepo.findByUsername(username).isEnabled()) {
+                    if (userRepo.findByUsername(username).isEnabled()
+                            || (Objects.equals(request.getMethod(), "GET"))
+                            ||request.getServletPath().equals("/bookstore/buy")
+                            ||request.getServletPath().equals("/bookstore/refund")) {
                         String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
                         stream(roles).forEach(role -> {
                             authorities.add(new SimpleGrantedAuthority(role));

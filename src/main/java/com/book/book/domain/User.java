@@ -1,19 +1,13 @@
 package com.book.book.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Cascade;
-
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 
 import static javax.persistence.GenerationType.*;
 
@@ -33,25 +27,13 @@ public class User {
     private String email;
     @Column(name = "Enabled")
     private boolean enabled=false;
+    @Column(name = "Balance")
+    private Integer balance=0;
 
     @Column(name = "books")
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<Book> books = new ArrayList<>();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     @ManyToMany
     @JoinTable(
@@ -61,25 +43,28 @@ public class User {
     )
     private List<Role> roles = new ArrayList<>();
 
+    public User(String name, String username, String password, String email) {
+        this.name = name;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
 
-
-
-
-
-
-    public User(Long id, String name, String username, String password, String email, boolean enabled) {
+    public User(Long id, String name, String username, String password, String email, boolean enabled, Integer balance) {
         this.id = id;
         this.name = name;
         this.username = username;
         this.password = password;
         this.email = email;
         this.enabled = enabled;
+        this.balance=balance;
     }
-    public User(Long id, String name, String username, String password, String email) {
+    public User(Long id, String name, String username, String password, String email,Integer balance) {
         this.id = id;
         this.name = name;
         this.username = username;
         this.password = password;
         this.email = email;
+        this.balance=balance;
     }
 }

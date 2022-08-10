@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+
 
 @RestController
 @RequestMapping("/bookstore")
@@ -15,24 +18,11 @@ public class BookstoreController {
     private final BookstoreService bookstoreService;
 
     @GetMapping(path = "/buy")
-    public User buyBook(@RequestParam("BookID") Long bookID, @RequestParam("UserID") Long userID){
-        return bookstoreService.buyBook(bookID,userID);
+    public User buyBook(@RequestParam("BookID") Long bookID,HttpServletRequest request) throws IOException {
+        return bookstoreService.buyBook(bookID,request);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-    //@GetMapping(path = "/refund")
-    //public User refundBook(@RequestParam("Bookname") String bookname, @RequestParam("Username") String username){
-        //return bookstoreService.refundBook(bookname,username);
-    //}
-
+    @GetMapping(path = "/refund")
+    public User refundBook(@RequestParam("BookID") Long bookID, HttpServletRequest request) throws IOException{
+        return bookstoreService.refundBook(bookID,request);
+    }
 }

@@ -43,7 +43,7 @@ public class UserResource {
         throw new RuntimeException("Please specify the ID of user to be deleted. ");
     }
 
-    @PostMapping("/signup")
+    @GetMapping("/signup")//TODO:HATA
     public String userSignIn(@RequestBody User user) {
         return userService.signUpUser(user);
     }
