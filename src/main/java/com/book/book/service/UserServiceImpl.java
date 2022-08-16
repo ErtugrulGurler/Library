@@ -25,23 +25,19 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final TokenRepo tokenRepo;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
-//UserDetails loadUserByUsername!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        boolean exists = userRepo.existsByUsername(username);
+        if(!exists){throw new RuntimeException("User not found in the database.");}
         User user = userRepo.findByUsername(username);
-        if (user == null) {
-            log.error("User not found in the database");
-            throw new UsernameNotFoundException("User not found in the database");
-        } else {
-            log.info("User found in the database: {}", username);
-            Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-            user.getRoles().forEach(role -> {
-                authorities.add(new SimpleGrantedAuthority(role.getName()));
+        log.info("User found in the database: {}", username);
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        user.getRoles().forEach(role -> {
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
             });
-            return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
         }
-    }
-    //UserDetails loadUserByUsername!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     @Override
     public User saveUser(User user) {
         if (user.getName()==null||user.getUsername()==null||user.getPassword()==null){throw new RuntimeException("Name, username or password can not be empty. ");}
@@ -55,9 +51,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userRepo.findByUsername(username);
     }
     @Override
-    public void deleteUser(Long user_no) {
+    public String deleteUser(Long user_no) {
         checkById(user_no);
+        String message = userRepo.getById(user_no).getName();
         userRepo.deleteById(user_no);
+        return message+" deleted.";
     }
 
     @Override
@@ -70,7 +68,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public User getUser(Long id) {
-        if (id==null){throw new RuntimeException("Please specify the user id to be shown. ");}
         checkById(id);
         log.info("Fetching user {}", userRepo.findById(id).get().getUsername().toString());
         return userRepo.getById(id);
@@ -89,7 +86,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public void confirm(Long token_id) {
-        Token token = tokenRepo.getById(token_id);
+        Token token = tokenRepo.findById(token_id).orElseThrow(()->new RuntimeException("Something went wrong."));
         if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
             userRepo.deleteById(token.getUser().getId());
             tokenRepo.deleteById(token_id);
@@ -118,7 +115,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public String checkIfEnabled(Long id) {
-        boolean enabled = tokenRepo.getById(id).getUser().isEnabled();
+        Token token = tokenRepo.findById(id).orElseThrow(()->new RuntimeException("Something went wrong. Check your token."));
+        boolean enabled = token.getUser().isEnabled();
         if (enabled) {
             return "Your account is already verified ";
         }else{
@@ -128,11 +126,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (!exists) {
             return "Your account has been deleted because it has not been verified";
         }
-        Token token = tokenRepo.getById(id);
         return " Welcome "+ token.getUser().getUsername()+ ". Your account is verified successfully";
     }
-    //#############################################################################################################
-
     @Override
     public User putUser(User user) {
         if (user.getId()==null){

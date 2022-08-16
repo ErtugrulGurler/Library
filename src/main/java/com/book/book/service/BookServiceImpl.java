@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -20,20 +20,17 @@ public class BookServiceImpl implements BookService {
         return bookRepository.findAll();
     }
     @Override
-    public Optional<Book> getBookById(Long id) {
-        checkByID(id);
-        return bookRepository.findById(id);
+    public Book getBookById(Long id) {
+        return bookRepository.findById(id).orElseThrow(()-> new RuntimeException("The Book with ID that is entered does not exist. "));
     }
     @Override
     public Book postBook(Book book) {
-        if (book.getName()==null|| book.getAuthor()==null){throw new RuntimeException("Book author or name should not be empty. ");}
+        if (book.getName()==null|| book.getAuthor()==null||book.getPrice()==null){throw new RuntimeException("Book author, name, or price can not be empty. ");}
         bookRepository.save(book);
-        return bookRepository.getById(book.getId());
-
+        return bookRepository.findById(book.getId()).orElseThrow(()->new RuntimeException("Something went wrong. "));
     }
     @Override
     public void deleteBook(Long book_no) {
-        checkByID(book_no);
         bookRepository.deleteById(book_no);
     }
     @Override
@@ -47,18 +44,16 @@ public class BookServiceImpl implements BookService {
     public Book putBook(Long id, Book updateBook) {
         if (updateBook.getId()==null){
             updateBook.setId(id);
-            return this.putBook(updateBook);
+            return putBook(updateBook);
         } else if(!updateBook.getId().equals(id)){
             throw new RuntimeException("Path variable and the book that is entered are not the same");
         }
         return changeBook(updateBook);
     }
-    public Book changeBook(Book updateBook){
+    public Book changeBook(Book updateBook){//TEST
         checkByID(updateBook.getId());
-        Optional<Book> bookFind = bookRepository.findById(updateBook.getId());
-        Book dbbook = bookRepository.getById(updateBook.getId());
+        Book dbbook = bookRepository.findById(updateBook.getId()).orElseThrow(()-> new RuntimeException("Book not found. "));
 
-        if (bookFind.isPresent()) {
             if (updateBook.getName() == null) {
                 updateBook.setName(dbbook.getName());
             } else {
@@ -74,11 +69,15 @@ public class BookServiceImpl implements BookService {
             } else {
                 dbbook.setNumber_of_pages(updateBook.getNumber_of_pages());
             }
-        }
+            if (updateBook.getPrice() == null) {
+                updateBook.setPrice(dbbook.getPrice());
+            } else {
+                dbbook.setPrice(updateBook.getPrice());
+            }
 
         dbbook = updateBook;
         bookRepository.save(dbbook);
-        return bookRepository.getById(dbbook.getId());
+        return bookRepository.findById(dbbook.getId()).orElseThrow(()-> new RuntimeException("Something went wrong."));
     }
     @Override
     public void checkByID(Long book_ID) {

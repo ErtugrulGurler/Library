@@ -8,6 +8,5 @@ public interface BookstoreService {
 
     User buyBook(Long bookID, HttpServletRequest request) throws IOException;
     User refundBook(Long bookID, HttpServletRequest request) throws IOException;
-
     User getUser(HttpServletRequest request) throws IOException;
 }
