@@ -27,7 +27,7 @@ public interface UserService {
 
     String checkIfEnabled(Long id);
 
-    void deleteUser(Long user_no);
+    String deleteUser(Long user_no);
 
     User putUser(User user);
     User putUser(Long id,User user);

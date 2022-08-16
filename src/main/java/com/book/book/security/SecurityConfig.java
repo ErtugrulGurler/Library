@@ -14,7 +14,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.*;
 
@@ -33,20 +32,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         customAuthenticationFilter.setFilterProcessesUrl("/login");
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
-        http.authorizeRequests().antMatchers(GET,"/confirm/**","/login/**", "/token/refresh/**","/user/signup/**","/user/confirm/**").permitAll();
-        http.authorizeRequests().antMatchers(GET,"/book/**", "/user/**","/role/**","/bookstore/**").hasAnyAuthority("USER","ADMIN","SUPER_ADMIN");
-        http.authorizeRequests().antMatchers(POST, "/user/save").hasAnyAuthority("ADMIN","SUPER_ADMIN");
-        http.authorizeRequests().antMatchers(POST, "/role/save").hasAnyAuthority("ADMIN","SUPER_ADMIN");
-        http.authorizeRequests().antMatchers(POST, "/book").hasAnyAuthority("SUPER_ADMIN");
-        http.authorizeRequests().antMatchers(DELETE, "/book/**").hasAnyAuthority("SUPER_ADMIN");
-        http.authorizeRequests().antMatchers(PUT, "/book/**").hasAnyAuthority("SUPER_ADMIN");
-        http.authorizeRequests().antMatchers(POST, "/role/addtouser").hasAnyAuthority("SUPER_ADMIN");
-        http.authorizeRequests().antMatchers(POST, "/enable_disable").hasAnyAuthority("SUPER_ADMIN");
+        http.authorizeRequests().antMatchers(GET,"/login/**", "/token/refresh/**","/user/signup/**","/user/confirm/**").permitAll();
+        http.authorizeRequests().antMatchers(GET,"/book/**","/user/**","/role/**","/bookstore/**").hasAnyAuthority("USER","ADMIN","SUPER_ADMIN");
+        http.authorizeRequests().antMatchers(POST, "/role/save","/user/save","/book").hasAnyAuthority("ADMIN","SUPER_ADMIN");
+        http.authorizeRequests().antMatchers(POST, "/role/**","/user/**").hasAuthority("SUPER_ADMIN");
+        http.authorizeRequests().antMatchers(PUT, "/user/**","/book/**").hasAuthority("SUPER_ADMIN");
+        http.authorizeRequests().antMatchers(DELETE, "/book/**","/role/**","/user/**").hasAuthority("SUPER_ADMIN");
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(userRepo), UsernamePasswordAuthenticationFilter.class);
     }
-
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {

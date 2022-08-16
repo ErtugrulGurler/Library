@@ -31,9 +31,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if(request.getServletPath().equals("/login") || request.getServletPath().equals("/token/refresh")){
-            filterChain.doFilter(request, response);
-        } else {
             String authorizationHeader = request.getHeader(AUTHORIZATION);
             if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 try {
@@ -45,8 +42,10 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
                     if (userRepo.findByUsername(username).isEnabled()
                             || (Objects.equals(request.getMethod(), "GET"))
-                            ||request.getServletPath().equals("/bookstore/buy")
-                            ||request.getServletPath().equals("/bookstore/refund")) {
+                            ||request.getServletPath().equals("/bookstore/buy")  //CAN BE POST
+                            ||request.getServletPath().equals("/bookstore/refund") //CAN BE POST
+                    )
+                    {
                         String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
                         stream(roles).forEach(role -> {
                             authorities.add(new SimpleGrantedAuthority(role));
@@ -63,7 +62,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     log.error("Error logging in: {}", exception.getMessage());
                     response.setHeader("error", exception.getMessage());
                     response.setStatus(FORBIDDEN.value());
-                    //response.sendError(FORBIDDEN.value());
                     Map<String, String> error = new HashMap<>();
                     error.put("error_message", exception.getMessage());
                     response.setContentType(APPLICATION_JSON_VALUE);
@@ -74,4 +72,3 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             }
         }
     }
-}

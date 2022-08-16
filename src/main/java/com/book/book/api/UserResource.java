@@ -35,15 +35,15 @@ public class UserResource {
         return ResponseEntity.created(uri).body(userService.saveUser(user));
     }
     @DeleteMapping(path = "{user_id}")
-    public void deleteMappingUser(@PathVariable("user_id") Long user_no) {
-        userService.deleteUser(user_no);
+    public String deleteMappingUser(@PathVariable("user_id") Long user_no) {
+        return userService.deleteUser(user_no);
     }
     @DeleteMapping
     public void deleteMappingUser() {
         throw new RuntimeException("Please specify the ID of user to be deleted. ");
     }
 
-    @GetMapping("/signup")//TODO:HATA
+    @GetMapping("/signup")
     public String userSignIn(@RequestBody User user) {
         return userService.signUpUser(user);
     }

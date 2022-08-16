@@ -20,7 +20,7 @@ public class BookController {
     }
 
     @GetMapping(path = "{id}")
-    public Optional<Book> getBookById(@PathVariable("id") Long id) {
+    public Book getBookById(@PathVariable("id") Long id) {
         return bookService.getBookById(id);}
     @GetMapping
     public void getBookById() {
@@ -34,9 +34,10 @@ public class BookController {
 
     @DeleteMapping(path = "{book_id}")
     public String deleteMappingBook(@PathVariable("book_id") Long book_no) {
-        String deletedBook = bookService.getBookById(book_no).toString();
+        Book deletedBook = bookService.getBookById(book_no);
+        String deletedOne = deletedBook.getName();
         bookService.deleteBook(book_no);
-        return "Book "+deletedBook+" is deleted. ";
+        return "Book "+deletedOne+" is deleted. ";
     }
     @DeleteMapping
     public void deleteMappingBook() {

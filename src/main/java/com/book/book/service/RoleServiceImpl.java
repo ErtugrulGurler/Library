@@ -22,14 +22,15 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public List<Role> getAllRoles() {
+        if (roleRepo.findAll().isEmpty()){throw new RuntimeException("There is no roles to show");}
         return roleRepo.findAll();
     }
     @Override
     public String deleteRole(Long id) {
-        if (!roleRepo.existsById(id)){throw new RuntimeException("Role with "+id+" already does not exist" );}
-        String deletedRole = roleRepo.getById(id).getName();
+        Role deletedRole = roleRepo.findById(id).orElseThrow(()-> new RuntimeException("Role with ID->"+id+" already does not exist"));
+        String deletedOne = deletedRole.getName();
         roleRepo.deleteById(id);
-        return "Role " + deletedRole + " is deleted";
+        return "Role " + deletedOne + " is deleted";
     }
     @Override
     public Role saveRole(Role role) {

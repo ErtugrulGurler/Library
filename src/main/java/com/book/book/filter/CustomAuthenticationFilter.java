@@ -11,6 +11,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.util.MimeTypeUtils;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
@@ -60,5 +63,16 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         tokens.put("refresh_token", refresh_token);
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        log.error("Error logging in: {}", failed.getMessage());
+        response.setHeader("error", failed.getMessage());
+        response.setStatus(FORBIDDEN.value());
+        Map<String, String> error = new HashMap<>();
+        error.put("error_message", failed.getMessage());
+        response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
+        new ObjectMapper().writeValue(response.getOutputStream(), error);
     }
 }
